@@ -9,7 +9,6 @@ services:
       - homepage.name=NordVPN
       - homepage.icon=nordvpn.png
       - homepage.description=VPN Connection
-    network_mode: bridge
     environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables
       - TOKEN=${VPN_NORDVPN_TOKEN:?Set VPN_NORDVPN_TOKEN in Portainer}
       - CONNECT=US

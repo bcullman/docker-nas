@@ -11,26 +11,36 @@ Application data is stored outside this repository under `/Volume1/public/docker
 | `adguard` | DNS and network filtering | Host |
 | `bazarr` | Subtitle management | VPN container |
 | `bittorrent` | BitTorrent client | VPN container |
-| `cloudflare` | Cloudflare Tunnel | Default bridge |
+| `cloudflare` | Cloudflare Tunnel | Compose-managed |
 | `homebridge` | HomeKit bridge | Host |
-| `homepage` | Service dashboard | Bridge |
+| `homepage` | Service dashboard | Compose-managed |
 | `lidarr` | Music management | VPN container |
-| `maintainerr` | Media cleanup | Default bridge |
-| `myspeed` | Internet speed monitoring | Default bridge |
-| `peanut` | UPS monitoring | Default bridge |
+| `maintainerr` | Media cleanup | Compose-managed |
+| `myspeed` | Internet speed monitoring | Compose-managed |
+| `peanut` | UPS monitoring | Compose-managed |
 | `plex` | Media server | Host |
 | `prowlarr` | Indexer management | VPN container |
 | `radarr` | Movie management | VPN container |
-| `scrutiny` | Drive health monitoring | Default bridge |
-| `seerr` | Media requests | Default bridge |
+| `scrutiny` | Drive health monitoring | Compose-managed |
+| `seerr` | Media requests | Compose-managed |
 | `sonarr` | TV series management | VPN container |
-| `tautulli` | Plex activity monitoring | Bridge |
+| `tautulli` | Plex activity monitoring | Compose-managed |
 | `tdarr` | Media transcoding | Host |
-| `vpn` | NordVPN network namespace | Bridge |
-| `vpn-orchestrator` | VPN-dependent stack orchestration | Default bridge |
-| `wud` | Container update monitoring | Default bridge |
+| `vpn` | NordVPN network namespace | Compose-managed |
+| `vpn-orchestrator` | VPN-dependent stack orchestration | Compose-managed |
+| `wud` | Container update monitoring | Compose-managed |
 
 Retired services are kept under `_archive/` and are not part of the active deployment.
+
+## Networking
+
+Active stacks use three networking patterns:
+
+- **Compose-managed:** `network_mode` is omitted, so Compose creates an isolated bridge network for the stack. Published ports provide access from the NAS and LAN. This is the default for ordinary services.
+- **Host:** `network_mode: host` shares the NAS network namespace. Use it only for services that need host-bound networking, LAN discovery, or multicast.
+- **VPN container:** `network_mode: container:vpn` shares the VPN container's network namespace. These services publish their ports through the `vpn` stack rather than through their own Compose files.
+
+Do not use the legacy explicit `network_mode: bridge` setting for new services. Omit `network_mode` unless host networking or VPN sharing is required.
 
 ## Deployment
 

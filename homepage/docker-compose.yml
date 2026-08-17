@@ -6,7 +6,6 @@ services:
     privileged: true
     labels:
       - wud.watch=true
-    network_mode: bridge
     volumes:
       - /Volume1/public/docker-configs/homepage:/app/config
       - /Volume2:/Volume2 # for disk widget tracking

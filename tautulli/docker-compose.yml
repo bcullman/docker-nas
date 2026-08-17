@@ -16,7 +16,6 @@ services:
       - homepage.widget.enableUser=true
       - homepage.widget.showEpisodeNumber=true
       - homepage.widget.expandOneStreamToTwoRows=true
-    network_mode: bridge
     volumes:
       - /Volume1/public/docker-configs/tautulli:/config
     environment:

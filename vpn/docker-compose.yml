@@ -31,6 +31,7 @@ services:
       - 8686:8686               # lidarr
       - 8787:8787               # readarr
       - 6767:6767               # bazarr
+      - 11011:11011             # cleanuparr
     cap_add:
       - NET_ADMIN               # Required
       - NET_RAW                 # Required

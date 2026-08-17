@@ -87,6 +87,12 @@ Use this proven workflow when moving an inline Compose credential into a Portain
 - Trigger the same Git redeploy endpoint again with the complete `env` array and Git authentication fields. Verify an HTTP 200 response, confirm `GitConfig.ConfigHash` matches the pushed commit, and use `GET /api/endpoints/3/docker/containers/<name>/json` to confirm the container is running and healthy. Where practical, compare the rendered environment value or label to Portainer's stored variable without displaying either value.
 - Do not spend effort rewriting or purging Git history during this migration. The owner plans to recreate the private repository with a clean first commit after the migration is fully accepted.
 
+### Portainer Git stack creation
+
+- When creating a Git-backed stack through the Portainer API, include `additionalFiles: []` in the initial lower-camel-case request even when the stack has no additional Compose files. Omitting it stores `AdditionalFiles` as `null`, which causes Portainer to omit the repository URL and Compose path from the "Redeploy from git repository" section.
+- Include `autoUpdate` in the initial creation request with `interval: "5m"`, an empty `webhook`, and both `forceUpdate` and `forcePullImage` set to `false`, matching the existing stacks. Creating the polling configuration afterward does not repair incomplete creation metadata.
+- After creation, inspect the stack and verify `AdditionalFiles` is `[]`, `AutoUpdate.Interval` is `5m`, and `GitConfig.URL`, `ReferenceName`, `ConfigFilePath`, and `ConfigHash` are populated before treating it as correctly GitOps-driven.
+
 ## Networking and ports
 
 Choose networking based on the service's role:

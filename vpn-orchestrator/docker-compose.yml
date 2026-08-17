@@ -38,7 +38,7 @@ services:
         11:radarr
         13:lidarr
         37:bazarr
-        62:cleanuparr
+        63:cleanuparr
         "
         log() {
           printf '%s [VPN Orchestrator] %s\n' "$$(date -Iseconds)" "$$*"

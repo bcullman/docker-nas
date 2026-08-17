@@ -1,0 +1,32 @@
+services:
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    restart: on-failure
+    labels:
+      - wud.watch=true
+      - homepage.group=Acquisition
+      - homepage.name=Bazarr
+      - homepage.icon=bazarr.png
+      - homepage.href=https://bazarr.bullman.net
+      - homepage.description=Subtitle Management
+      - homepage.widget.type=bazarr
+      - homepage.widget.url=http://192.168.0.250:6767
+      - homepage.widget.fields=["missingEpisodes", "missingMovies"]
+      - homepage.widget.key=${BAZARR_API_KEY:?Set BAZARR_API_KEY in Portainer}
+    network_mode: container:vpn
+    volumes:
+      - /Volume1/public/docker-configs/bazarr:/config
+      - /Volume2/media:/media
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+    healthcheck:
+      test: curl --silent --fail http://localhost:6767/ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+#    ports:
+#      - 6767:6767

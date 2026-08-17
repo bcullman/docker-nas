@@ -1,0 +1,27 @@
+services:
+  myspeed:
+    image: germannewsmaker/myspeed
+    container_name: myspeed
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Monitoring
+      - homepage.name=My Speed
+      - homepage.icon=myspeed.png
+      - homepage.href=https://myspeed.bullman.net
+      - homepage.description=Link Speed
+      - homepage.widget.type=myspeed
+      - homepage.widget.url=http://192.168.0.250:5216
+      - homepage.widget.fields=["ping", "download", "upload"]
+    environment:
+      - TZ=America/Los_Angeles
+    volumes:
+      - /Volume1/public/docker-configs/myspeed:/myspeed/data
+    healthcheck:
+        test: wget --no-verbose --tries=1 --spider http://127.0.0.1:5216/api/speedtests/status || exit 1
+        interval: 10s
+        retries: 3
+        start_period: 30s
+        timeout: 10s
+    ports:
+      - "5216:5216"

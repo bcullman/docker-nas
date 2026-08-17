@@ -1,0 +1,31 @@
+services:
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: on-failure
+    labels:
+      - wud.watch=true
+      - homepage.group=Acquisition
+      - homepage.name=Prowlarr
+      - homepage.icon=prowlarr.png
+      - homepage.href=https://prowlarr.bullman.net
+      - homepage.description=Indexer Management
+      - homepage.widget.type=prowlarr
+      - homepage.widget.url=http://192.168.0.250:9696
+      - homepage.widget.fields=["numberOfGrabs", "numberOfQueries", "numberOfFailGrabs", "numberOfFailQueries"]
+      - homepage.widget.key=${PROWLARR_API_KEY:?Set PROWLARR_API_KEY in Portainer}
+    network_mode: container:vpn
+    volumes:
+      - /Volume1/public/docker-configs/prowlarr:/config
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+    healthcheck:
+      test: curl --silent --fail http://localhost:9696/ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+#    ports:
+#      - 9696:9696

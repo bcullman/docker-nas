@@ -1,0 +1,31 @@
+services:
+  peanut:
+    image: brandawg93/peanut:latest
+    container_name: PeaNUT
+    restart: unless-stopped
+    # The container runs as UID/GID 1000:1000. The host directory mounted at
+    # /config must be writable by that user — otherwise settings made in the
+    # web UI will not persist across restarts. If you see "EACCES: permission
+    # denied, access '/config'" in the logs:
+    #   - chown -R 1000:1000 /path/to/config        on the host, or
+    #   - set `user: "<host-uid>:<host-gid>"` to match the host dir owner.
+    # Note: PUID/PGID environment variables are not supported.
+    labels:
+      - wud.watch=true
+      - homepage.group=Monitoring
+      - homepage.name=PeaNUT
+      - homepage.icon=peanut.png
+      - homepage.href=https://nut.bullman.net
+      - homepage.description=UPS Monitoring
+      - homepage.widget.type=peanut
+      - homepage.widget.url=http://192.168.0.250:8081
+      - homepage.widget.fields=["battery_charge","ups_load", "ups_status"]
+      - homepage.widget.key=${PEANUT_API_KEY:?Set PEANUT_API_KEY in Portainer}
+    environment:
+      - TZ=America/Los_Angeles
+      - WEB_PORT=8080
+      - AUTH_DISABLED=true
+    volumes:
+      - /Volume1/public/docker-configs/peanut:/config
+    ports:
+      - 8081:8080

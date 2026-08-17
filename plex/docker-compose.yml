@@ -1,0 +1,33 @@
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Media
+      - homepage.name=Plex
+      - homepage.icon=plex.png
+      - homepage.href=https://plex.bullman.net
+      - homepage.description=Plex Media Server
+      - homepage.widget.type=plex
+      - homepage.widget.url=http://192.168.0.250:32400
+      - homepage.widget.fields=["albums", "movies", "tv"]
+      - homepage.widget.key=${PLEX_API_TOKEN:?Set PLEX_API_TOKEN in Portainer}
+    network_mode: host
+    volumes:
+      - /Volume1/public/docker-configs/plex:/config
+      - /Volume2/media:/media
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+      - PLEX_CLAIM=${PLEX_CLAIM_TOKEN:?Set PLEX_CLAIM_TOKEN in Portainer}
+    healthcheck:
+      test: curl --connect-timeout 15 --silent --show-error --fail http://localhost:32400/identity
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - 32400:32400

@@ -1,0 +1,32 @@
+services:
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: on-failure
+    labels:
+      - wud.watch=true
+      - homepage.group=Acquisition
+      - homepage.name=Radarr
+      - homepage.icon=radarr.png
+      - homepage.href=https://radarr.bullman.net
+      - homepage.description=Movie Management
+      - homepage.widget.type=radarr
+      - homepage.widget.url=http://192.168.0.250:7878
+      - homepage.widget.fields=["wanted", "missing", "queued", "movies"]
+      - homepage.widget.key=${RADARR_API_KEY:?Set RADARR_API_KEY in Portainer}
+    network_mode: container:vpn
+    volumes:
+      - /Volume1/public/docker-configs/radarr:/config
+      - /Volume2/media:/media
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+    healthcheck:
+      test: curl --silent --fail http://localhost:7878/ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+#    ports:
+#      - 7878:7878

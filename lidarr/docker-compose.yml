@@ -1,0 +1,32 @@
+services:
+  lidarr:
+    image: lscr.io/linuxserver/lidarr:latest
+    container_name: lidarr
+    restart: on-failure
+    labels:
+      - wud.watch=true
+      - homepage.group=Acquisition
+      - homepage.name=Lidarr
+      - homepage.icon=lidarr.png
+      - homepage.href=https://lidarr.bullman.net
+      - homepage.description=Music Management
+      - homepage.widget.type=lidarr
+      - homepage.widget.url=http://192.168.0.250:8686
+      - homepage.widget.fields=["wanted","queued", "artists"]
+      - homepage.widget.key=${LIDARR_API_KEY:?Set LIDARR_API_KEY in Portainer}
+    network_mode: container:vpn
+    volumes:
+      - /Volume1/public/docker-configs/lidarr:/config
+      - /Volume2/media:/media
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+    healthcheck:
+      test: curl --silent --fail http://localhost:8686/ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+#    ports:
+#      - 8686:8686

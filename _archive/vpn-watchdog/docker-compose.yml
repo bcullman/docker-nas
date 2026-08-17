@@ -1,0 +1,49 @@
+services:
+  vpn-watchdog:
+    image: docker:24-cli
+    container_name: vpn-watchdog
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Monitoring
+      - homepage.name=NordVPN Watchdog
+      - homepage.icon=sh-watchyourports.png
+      - homepage.description=VPN Maintenance
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /tmp:/tmp
+    healthcheck:
+      test: ["CMD-SHELL", "docker inspect vpn >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    command:
+      - sh
+      - -c
+      - |
+        echo "[Watchdog] Starting VPN watchdog with file-based comparison..."; \
+        while true; do \
+          docker inspect --format='{{.Id}}' vpn > /tmp/current_id.txt 2>/dev/null; \
+          if [ ! -s /tmp/current_id.txt ]; then \
+            echo "[Watchdog] Failed to inspect VPN container. Skipping..."; \
+          else \
+            if [ ! -f /tmp/last_id.txt ]; then \
+              echo "[Watchdog] No previous ID found. Saving current ID."; \
+              cp /tmp/current_id.txt /tmp/last_id.txt; \
+            elif ! cmp -s /tmp/current_id.txt /tmp/last_id.txt; then \
+              echo "[Watchdog] Detected VPN container restart. Removing dependents so Portainer can recreate them..."; \
+              docker rm -f bazarr || true; \
+              docker rm -f bittorrent || true; \
+              docker rm -f lidarr || true; \
+              docker rm -f prowlarr || true; \
+              docker rm -f radarr || true; \
+              docker rm -f readarr || true; \
+              docker rm -f sonarr || true; \
+              cp /tmp/current_id.txt /tmp/last_id.txt;
+            else \
+              echo "[Watchdog] VPN container has not changed."; \
+            fi; \
+          fi; \
+          sleep 30; \
+        done

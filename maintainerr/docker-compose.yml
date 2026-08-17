@@ -1,0 +1,28 @@
+services:
+  maintainerr:
+    image: ghcr.io/maintainerr/maintainerr:latest
+    container_name: maintainerr
+    restart: unless-stopped
+    user: 0:0
+    labels:
+      - wud.watch=true
+      - homepage.group=Utilities
+      - homepage.name=Maintainerr
+      - homepage.icon=maintainerr.png
+      - homepage.href=https://maintainerr.bullman.net
+      - homepage.description=Media Cleanup
+      - homepage.widget.type=maintainerr
+      - homepage.widget.url=http://192.168.0.250:6246
+      - homepage.widget.fields=["itemsHandled", "episodesHandled", "moviesHandled", "reclaimable"]
+    volumes:
+      - /Volume1/public/docker-configs/maintainerr:/opt/data
+    environment:
+      - TZ=America/Los_Angeles
+    healthcheck:
+      test: ["CMD", "/opt/app/healthcheck.sh"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
+    ports:
+      - 6246:6246

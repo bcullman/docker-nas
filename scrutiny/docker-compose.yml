@@ -1,0 +1,39 @@
+services:
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:latest # If latest is broken, use v0.9.2-omnibus
+    container_name: scrutiny
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Monitoring
+      - homepage.name=Scrutiny
+      - homepage.icon=scrutiny.png
+      - homepage.href=https://scrutiny.bullman.net
+      - homepage.description=Drive Health Monitoring
+      - homepage.widget.type=scrutiny
+      - homepage.widget.url=http://192.168.0.250:8082
+      - homepage.widget.fields=["passed", "failed", "unknown"]
+    environment:
+      - TZ=America/Los_Angeles
+    volumes:
+      - /run/udev:/run/udev:ro
+      - /Volume1/public/docker-configs/scrutiny/config:/opt/scrutiny/config
+      - /Volume1/public/docker-configs/scrutiny/influxdb:/opt/scrutiny/influxdb
+    healthcheck:
+      test: curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/web/favicon-32x32.png
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 30s
+    ports:
+      - "8082:8080" # webapp
+      - "8086:8086" # influxDB admin
+    devices:
+      - /dev/sda:/dev/sda
+      - /dev/sdb:/dev/sdb
+      - /dev/sdc:/dev/sdc
+      - /dev/sdd:/dev/sdd
+      - /dev/nvme0:/dev/nvme0
+    cap_add:
+      - SYS_RAWIO
+      - SYS_ADMIN

@@ -1,0 +1,45 @@
+services:
+  tdarr:
+    image: ghcr.io/haveagitgat/tdarr:latest
+    container_name: tdarr
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Utilities
+      - homepage.name=Tdarr
+      - homepage.icon=tdarr.png
+      - homepage.href=https://tdarr.bullman.net
+      - homepage.description=Transcoding
+      - homepage.widget.type=tdarr
+      - homepage.widget.url=http://192.168.0.250:8265
+      - homepage.widget.fields=["queue", "processed", "errored", "saved"]
+    network_mode: host
+    volumes:
+      - /Volume1/public/docker-configs/tdarr/configs:/app/configs
+      - /Volume1/public/docker-configs/tdarr/server:/app/server
+      - /Volume1/public/docker-configs/tdarr/logs:/app/logs
+      - /Volume2/media:/media
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+      - serverIP=192.168.0.250
+      - internalNode=true
+      - inContainer=true
+      - ffmpegVersion=7
+      - nodeName=MyInternalNode
+    healthcheck:
+      test: curl --silent --fail http://192.168.0.250:8265/api/v2/status
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - 8265:8265 # webUI port
+      - 8266:8266 # server port
+    devices:
+      - /dev/dri:/dev/dri
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '8'

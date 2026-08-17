@@ -1,0 +1,36 @@
+services:
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent
+    container_name: bittorrent
+    restart: on-failure
+    labels:
+      - wud.watch=true
+      - homepage.group=Acquisition
+      - homepage.name=BitTorrent
+      - homepage.icon=qbittorrent.png
+      - homepage.href=https://bittorrent.bullman.net
+      - homepage.description=BitTorrent Client
+      - homepage.widget.type=qbittorrent
+      - homepage.widget.url=http://192.168.0.250:8080
+      - homepage.widget.username=${BITTORRENT_USERNAME:?Set BITTORRENT_USERNAME in Portainer}
+      - homepage.widget.password=${BITTORRENT_PASSWORD:?Set BITTORRENT_PASSWORD in Portainer}
+#      - homepage.widget.enableLeechProgress=true
+    network_mode: container:vpn
+    volumes:
+      - /Volume1/public/docker-configs/bittorrent:/config
+      - /Volume2/media:/media
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+      - WEBUI_PORT=8080
+    healthcheck:
+      test: curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/images/qbittorrent32.png
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+#    ports:
+#      - 8080:8080
+#      - 6881:6881
+#      - 6881:6881/udp

@@ -1,0 +1,20 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    privileged: true
+    labels:
+      - wud.watch=true
+    network_mode: bridge
+    volumes:
+      - /Volume1/public/docker-configs/homepage:/app/config
+      - /Volume2:/Volume2 # for disk widget tracking
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0 # optional, your user id
+      - PGID=0 # optional, your group id
+      - HOMEPAGE_ALLOWED_HOSTS=homepage.bullman.net, 192.168.0.250:3333 # required, may need port. See gethomepage.dev/installation/#homepage_allowed_hosts
+    ports:
+      - 3333:3000

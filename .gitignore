@@ -1,0 +1,17 @@
+.config/
+.DS_Store
+.trainingdata/
+*copy.*
+#.config/.config/
+#*.db
+#*.db-shm
+#*.db-wal
+#*.pid
+#bittorrent/.config/
+#homebridge.log
+#homebridge/.config/node_modules/
+#logs/
+#MediaCover/
+#portainer/.config/
+netbox-docker/
+netdisco/

@@ -1,0 +1,33 @@
+services:
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Media
+      - homepage.name=Tautulli
+      - homepage.icon=tautulli.png
+      - homepage.href=https://tautulli.bullman.net
+      - homepage.description=Media Monitoring
+      - homepage.widget.type=tautulli
+      - homepage.widget.url=http://192.168.0.250:8383
+      - homepage.widget.key=${TAUTULLI_API_KEY:?Set TAUTULLI_API_KEY in Portainer}
+      - homepage.widget.enableUser=true
+      - homepage.widget.showEpisodeNumber=true
+      - homepage.widget.expandOneStreamToTwoRows=true
+    network_mode: bridge
+    volumes:
+      - /Volume1/public/docker-configs/tautulli:/config
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+    healthcheck:
+      test: curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8181/images/favicon/favicon.ico
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - 8383:8181

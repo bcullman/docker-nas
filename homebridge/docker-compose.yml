@@ -1,0 +1,32 @@
+services:
+  homebridge:
+    image: homebridge/homebridge:latest
+    container_name: homebridge
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Utilities
+      - homepage.name=Homebridge
+      - homepage.icon=homebridge.png
+      - homepage.href=https://Homebridge.bullman.net
+      - homepage.description=Homebridge
+      - homepage.widget.type=homebridge
+      - homepage.widget.url=http://192.168.0.250:8581
+      - homepage.widget.username=${HOMEBRIDGE_USERNAME:?Set HOMEBRIDGE_USERNAME in Portainer}
+      - homepage.widget.password=${HOMEBRIDGE_PASSWORD:?Set HOMEBRIDGE_PASSWORD in Portainer}
+    network_mode: host
+    volumes:
+      - /Volume1/public/docker-configs/homebridge:/homebridge
+    environment:
+      - TZ=America/Los_Angeles
+    healthcheck:
+      test: curl --connect-timeout 15 --silent --show-error --fail http://localhost:8581/api/auth/settings
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10mb"
+        max-file: "1"

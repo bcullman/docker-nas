@@ -1,0 +1,32 @@
+services:
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    restart: unless-stopped
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+      - homepage.group=Monitoring
+      - homepage.name=Watchtower
+      - homepage.icon=watchtower.png
+#      - homepage.href=http://192.168.0.250:3002
+      - homepage.description=Docker Maintenance
+      - homepage.widget.type=watchtower
+      - homepage.widget.url=http://192.168.0.250:3002
+      - homepage.widget.fields=["containers_scanned", "containers_updated", "containers_failed"]
+      - homepage.widget.key=sIVrandY0Ag9LJknrUTeanXn8oW0/ak6mzxeZWEEliw=
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/timezone:/etc/timezone:ro
+    environment:
+      - TZ=America/Los_Angeles
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - WATCHTOWER_SCHEDULE=0 0 19 * * *
+      - WATCHTOWER_INCLUDE_STOPPED=true
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+      - WATCHTOWER_HTTP_API_UPDATE=true
+      - WATCHTOWER_HTTP_API_METRICS=true
+      - WATCHTOWER_HTTP_API_TOKEN=sIVrandY0Ag9LJknrUTeanXn8oW0/ak6mzxeZWEEliw=
+      - WATCHTOWER_HTTP_API_PERIODIC_POLLS=true
+    ports:
+      - 3002:8080

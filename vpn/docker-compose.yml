@@ -1,0 +1,43 @@
+services:
+  vpn:
+    container_name: vpn
+    image: ghcr.io/bubuntux/nordvpn
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Network
+      - homepage.name=NordVPN
+      - homepage.icon=nordvpn.png
+      - homepage.description=VPN Connection
+    network_mode: bridge
+    environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables
+      - TOKEN=${VPN_NORDVPN_TOKEN:?Set VPN_NORDVPN_TOKEN in Portainer}
+      - CONNECT=US
+      - TECHNOLOGY=NordLynx
+      - NETWORK=192.168.0.0/24  # So it can be accessed within the local network
+      - DNS=1.1.1.1
+    healthcheck:
+      test: "ip link show nordlynx | grep -q '<POINTOPOINT,UP,LOWER_UP>'"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - 8080:8080               # qbittorrent
+      - 6881:6881               # qbittorrent
+      - 6881:6881/udp           # qbittorrent
+      - 9696:9696               # prowlarr
+      - 8989:8989               # sonarr
+      - 7878:7878               # radarr
+      - 8686:8686               # lidarr
+      - 8787:8787               # readarr
+      - 6767:6767               # bazarr
+    cap_add:
+      - NET_ADMIN               # Required
+      - NET_RAW                 # Required
+#    networks:
+#          - vpn-net
+
+#networks:
+#  vpn-net:
+#    driver: bridge

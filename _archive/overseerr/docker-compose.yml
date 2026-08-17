@@ -1,0 +1,31 @@
+services:
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Acquisition
+      - homepage.name=Overseerr
+      - homepage.icon=overseerr.png
+      - homepage.href=https://overseerr.bullman.net
+      - homepage.description=Media Request Management
+      - homepage.widget.type=overseerr
+      - homepage.widget.url=http://192.168.0.250:5055
+      - homepage.widget.fields=["pending", "approved", "available", "processing"]
+      - homepage.widget.key=MTY5MDkyNzczMDM0M2I2Y2Y4OTJkLTg4OGYtNGMxMy05NjVhLTk0MzM3YTUyNWIzOQ==
+    network_mode: host
+    volumes:
+      - /Volume1/public/docker-configs/overseerr:/config
+    environment:
+      - TZ=America/Los_Angeles
+      - PUID=0
+      - PGID=0
+    healthcheck:
+      test: curl --connect-timeout 15 --silent --show-error --fail http://localhost:5055/api/v1/status
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - 5055:5055

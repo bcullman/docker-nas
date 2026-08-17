@@ -1,0 +1,31 @@
+services:
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Acquisition
+      - homepage.name=Seerr
+      - homepage.icon=seerr.png
+      - homepage.href=https://seerr.bullman.net
+      - homepage.description=Media Request Management
+      - homepage.widget.type=seerr
+      - homepage.widget.url=http://192.168.0.250:5055
+      - homepage.widget.fields=["pending", "approved", "available", "processing", "completed", "issues"]
+      - homepage.widget.key=${SEERR_API_KEY:?Set SEERR_API_KEY in Portainer}
+    volumes:
+      - /Volume1/public/docker-configs/seerr:/app/config
+    environment:
+      - TZ=America/Los_Angeles
+      - LOG_LEVEL=debug
+      - PORT=5055
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "5055:5055"

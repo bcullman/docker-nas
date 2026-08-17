@@ -1,0 +1,43 @@
+services:
+  speedtest-tracker:
+    image: lscr.io/linuxserver/speedtest-tracker:latest
+    container_name: speedtest
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Monitoring
+      - homepage.name=Speedtest Tracker
+      - homepage.icon=speedtest-tracker.png
+      - homepage.href=https://speedtest.bullman.net
+      - homepage.description=Link Speed
+      - homepage.widget.type=speedtest
+      - homepage.widget.url=http://192.168.0.250:3003
+      - homepage.widget.fields=["download", "upload", "ping"]
+      - homepage.widget.key=gvS7dklIeUS1BPbpS7v440qlU1CYVKACI3dDN73I6d78ac52
+      - homepage.widget.bitratePrecision=0
+    environment:
+      - TZ=America/Los_Angeles
+#      - PUID=0 #needs to be commented out or set to 1000 
+#      - PGID=0 #needs to be commented out or set to 1000 
+      - APP_KEY=base64:kld1lQh4o0v1G7ajvYfwn4hlut03Uwi54GjD23GMBUo=
+      - APP_URL=http://192.168.0.250:3003
+      - DB_CONNECTION=sqlite
+      - SPEEDTEST_SCHEDULE=*/15 * * * *
+      - SPEEDTEST_SERVERS=1782 #,8864,6199,,64151
+#      - DB_HOST= #optional
+#      - DB_PORT= #optional
+#      - DB_DATABASE= #optional
+#      - DB_USERNAME= #optional
+#      - DB_PASSWORD= #optional
+#      - DISPLAY_TIMEZONE=Etc/UTC #optional
+#      - PRUNE_RESULTS_OLDER_THAN=0 #optional
+    volumes:
+      - /Volume1/public/docker-configs/speedtest:/config
+    healthcheck:
+        test: curl -fSs http://192.168.0.250:3003/api/healthcheck | jq -r .message || exit 1
+        interval: 10s
+        retries: 3
+        start_period: 30s
+        timeout: 10s
+    ports:
+          - 3003:80

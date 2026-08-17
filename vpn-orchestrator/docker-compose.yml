@@ -1,0 +1,182 @@
+services:
+  vpn-orchestrator:
+    image: docker:cli
+    container_name: vpn-orchestrator
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+      - homepage.group=Monitoring
+      - homepage.name=VPN Orchestrator
+      - homepage.icon=sh-docker.png
+      - homepage.description=VPN Dependency Management
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /Volume1/public/docker-configs/vpn-orchestrator:/state
+    environment:
+      - TZ=America/Los_Angeles
+      - PORTAINER_URL=http://192.168.0.250:19000
+      - PORTAINER_ENDPOINT_ID=3
+      - PORTAINER_API_KEY=${PORTAINER_API_KEY:?Set PORTAINER_API_KEY in Portainer}
+    healthcheck:
+      test: ["CMD-SHELL", "test -s /state/heartbeat && docker inspect vpn >/dev/null 2>&1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    command:
+      - sh
+      - -c
+      - |
+        # Compose converts each $$ below to a single $ for the container shell.
+        set -u
+        STATE_FILE=/state/vpn-container-id
+        HEARTBEAT=/state/heartbeat
+        DEPENDENTS="
+        7:bittorrent
+        10:prowlarr
+        9:sonarr
+        11:radarr
+        13:lidarr
+        37:bazarr
+        "
+        log() {
+          printf '%s [VPN Orchestrator] %s\n' "$$(date -Iseconds)" "$$*"
+        }
+        post() {
+          wget --quiet --output-document=/dev/null \
+            -T 15 \
+            --header="X-API-Key: $$PORTAINER_API_KEY" \
+            --post-data='' \
+            "$$PORTAINER_URL$$1"
+        }
+        vpn_id() {
+          docker inspect --format='{{.Id}}' vpn 2>/dev/null
+        }
+        vpn_is_healthy() {
+          [ "$$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{end}}' vpn 2>/dev/null)" = "healthy" ]
+        }
+        container_is_healthy() {
+          [ "$$(docker inspect --format='{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{end}}' "$$1" 2>/dev/null)" = "running healthy" ]
+        }
+        dependents_are_healthy() {
+          UNHEALTHY_DEPENDENCIES=""
+          UNHEALTHY_NAMES=""
+          for dependency in $$DEPENDENTS; do
+            container=$${dependency#*:}
+            if ! container_is_healthy "$$container"; then
+              UNHEALTHY_DEPENDENCIES="$$UNHEALTHY_DEPENDENCIES $$dependency"
+              UNHEALTHY_NAMES="$$UNHEALTHY_NAMES $$container"
+            fi
+          done
+          [ -z "$$UNHEALTHY_DEPENDENCIES" ]
+        }
+        wait_for_dependents() {
+          elapsed=0
+          while [ "$$elapsed" -lt 120 ]; do
+            if [ "$$(vpn_id)" != "$$1" ] || ! vpn_is_healthy; then
+              log "VPN changed or became unhealthy during reconciliation"
+              return 1
+            fi
+            if dependents_are_healthy; then
+              log "All VPN-dependent containers are healthy"
+              return 0
+            fi
+            sleep 5
+            elapsed=$$((elapsed + 5))
+          done
+          log "Timed out waiting for:$$UNHEALTHY_NAMES"
+          return 1
+        }
+        reconcile_dependents() {
+          current_vpn_id=$$1
+          targets=$$2
+          reason=$$3
+          log "Reconciling VPN-dependent Portainer stacks ($$reason)"
+          for action in stop start; do
+            if [ "$$action" = stop ]; then
+              action_label=Stopping
+            else
+              action_label=Starting
+            fi
+            failed=0
+            pids=""
+            for dependency in $$targets; do
+              stack_id=$${dependency%%:*}
+              container=$${dependency#*:}
+              log "$$action_label $$container stack (ID: $$stack_id)"
+              (post "/api/stacks/$$stack_id/$$action?endpointId=$$PORTAINER_ENDPOINT_ID" || {
+                log "Failed to $$action $$container stack"
+                exit 1
+              }) &
+              pids="$$pids $$!"
+            done
+            for pid in $$pids; do
+              wait "$$pid" || failed=1
+            done
+            if [ "$$action" = start ] && [ "$$failed" -ne 0 ]; then
+              return 1
+            fi
+          done
+          wait_for_dependents "$$current_vpn_id" || return 1
+          printf '%s\n' "$$current_vpn_id" > "$$STATE_FILE.tmp"
+          mv "$$STATE_FILE.tmp" "$$STATE_FILE"
+          log "Reconciliation completed for VPN container $$current_vpn_id"
+        }
+        mkdir -p /state
+        rm -f "$$HEARTBEAT"
+        log "Waiting for Portainer at $$PORTAINER_URL"
+        until wget --quiet --output-document=/dev/null -T 10 "$$PORTAINER_URL/api/status"; do
+          sleep 5
+        done
+        first_pass=true
+        while true; do
+          current_vpn_id=$$(vpn_id)
+          previous_vpn_id=""
+          if [ -s "$$STATE_FILE" ]; then
+            previous_vpn_id=$$(tr -d '\r\n' < "$$STATE_FILE")
+          fi
+          if ! vpn_is_healthy; then
+            rm -f "$$HEARTBEAT"
+            log "Waiting for the VPN container to become healthy"
+            until vpn_is_healthy; do
+              sleep 5
+            done
+            current_vpn_id=$$(vpn_id)
+          fi
+          if [ "$$current_vpn_id" != "$$previous_vpn_id" ]; then
+            rm -f "$$HEARTBEAT"
+            if ! reconcile_dependents "$$current_vpn_id" "$$DEPENDENTS" "VPN container changed"; then
+              log "Reconciliation failed; retrying in 15 seconds"
+            else
+              date +%s > "$$HEARTBEAT"
+            fi
+          elif ! dependents_are_healthy; then
+            rm -f "$$HEARTBEAT"
+            if [ "$$first_pass" != true ]; then
+              log "Waiting 60 seconds for transient stack maintenance to finish:$$UNHEALTHY_NAMES"
+              sleep 60
+              if ! vpn_is_healthy || [ "$$(vpn_id)" != "$$current_vpn_id" ]; then
+                first_pass=false
+                continue
+              fi
+              if dependents_are_healthy; then
+                log "VPN-dependent containers recovered without orchestration"
+                date +%s > "$$HEARTBEAT"
+                first_pass=false
+                sleep 15
+                continue
+              fi
+            fi
+            targets=$$UNHEALTHY_DEPENDENCIES
+            names=$$UNHEALTHY_NAMES
+            if ! reconcile_dependents "$$current_vpn_id" "$$targets" "unhealthy stacks:$$names"; then
+              log "Targeted reconciliation failed; retrying in 15 seconds"
+            else
+              date +%s > "$$HEARTBEAT"
+            fi
+          else
+            date +%s > "$$HEARTBEAT"
+          fi
+          first_pass=false
+          sleep 15
+        done

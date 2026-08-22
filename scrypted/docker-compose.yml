@@ -5,6 +5,11 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
+      - homepage.group=Utilities
+      - homepage.name=Scrypted
+      - homepage.icon=scrypted.png
+      - homepage.href=https://scrypted.bullman.net
+      - homepage.description=Camera and smart-home integration
     network_mode: host
     volumes:
       - /Volume1/public/docker-configs/scrypted:/server/volume

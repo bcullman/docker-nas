@@ -151,6 +151,13 @@ The normal timing is:
 
 ## Adding a container
 
+### Compose-only deployment invariant
+
+- Every Docker container on the NAS must be defined by a `docker-compose.yml` file committed in this repository and managed through its Portainer Git stack. The repository is the source of truth for all container configuration.
+- Never create or replace a NAS container with `docker run`, `docker create`, an uploaded Compose file, Portainer's manual container form, or any other ad hoc mechanism, even as a temporary bootstrap or test.
+- A request to "create," "install," "deploy," or "run" a container does not authorize bypassing GitOps. Author and validate the repository Compose file first, then commit, push, and deploy it through Portainer using the established workflow.
+- If the repository or Portainer workflow is unavailable, stop and report the blocker. Do not fall back to an unmanaged container.
+
 1. Read the image's official documentation for supported environment variables, persistent paths, required capabilities/devices, ports, and available probe commands.
 2. Pick the closest active Compose file by role and image family. LinuxServer.io media managers should follow `radarr`, `sonarr`, or `lidarr`; VPN-independent web apps should follow a comparable bridge service.
 3. Create `<service>/docker-compose.yml` with only settings the service needs, following the canonical order.

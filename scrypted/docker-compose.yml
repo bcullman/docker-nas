@@ -1,0 +1,22 @@
+services:
+  scrypted:
+    image: ghcr.io/koush/scrypted:latest
+    container_name: scrypted
+    restart: unless-stopped
+    labels:
+      - wud.watch=true
+    network_mode: host
+    volumes:
+      - /Volume1/public/docker-configs/scrypted:/server/volume
+    environment:
+      - TZ=America/Los_Angeles
+    healthcheck:
+      test: curl --insecure --connect-timeout 15 --silent --show-error --fail https://localhost:10443/
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    devices:
+      - /dev/dri:/dev/dri
+    logging:
+      driver: none

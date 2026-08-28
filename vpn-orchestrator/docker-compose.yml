@@ -50,8 +50,8 @@ services:
             --post-data='' \
             "$$PORTAINER_URL$$1"
         }
-        vpn_id() {
-          docker inspect --format='{{.Id}}' vpn 2>/dev/null
+        vpn_generation() {
+          docker inspect --format='{{.Id}} {{.State.StartedAt}}' vpn 2>/dev/null
         }
         vpn_is_healthy() {
           [ "$$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{end}}' vpn 2>/dev/null)" = "healthy" ]
@@ -74,8 +74,8 @@ services:
         wait_for_dependents() {
           elapsed=0
           while [ "$$elapsed" -lt 120 ]; do
-            if [ "$$(vpn_id)" != "$$1" ] || ! vpn_is_healthy; then
-              log "VPN changed or became unhealthy during reconciliation"
+            if [ "$$(vpn_generation)" != "$$1" ] || ! vpn_is_healthy; then
+              log "VPN restarted, changed, or became unhealthy during reconciliation"
               return 1
             fi
             if dependents_are_healthy; then
@@ -89,7 +89,7 @@ services:
           return 1
         }
         reconcile_dependents() {
-          current_vpn_id=$$1
+          current_vpn_generation=$$1
           targets=$$2
           reason=$$3
           log "Reconciling VPN-dependent Portainer stacks ($$reason)"
@@ -118,10 +118,10 @@ services:
               return 1
             fi
           done
-          wait_for_dependents "$$current_vpn_id" || return 1
-          printf '%s\n' "$$current_vpn_id" > "$$STATE_FILE.tmp"
+          wait_for_dependents "$$current_vpn_generation" || return 1
+          printf '%s\n' "$$current_vpn_generation" > "$$STATE_FILE.tmp"
           mv "$$STATE_FILE.tmp" "$$STATE_FILE"
-          log "Reconciliation completed for VPN container $$current_vpn_id"
+          log "Reconciliation completed for VPN generation $$current_vpn_generation"
         }
         mkdir -p /state
         rm -f "$$HEARTBEAT"
@@ -131,10 +131,10 @@ services:
         done
         first_pass=true
         while true; do
-          current_vpn_id=$$(vpn_id)
-          previous_vpn_id=""
+          current_vpn_generation=$$(vpn_generation)
+          previous_vpn_generation=""
           if [ -s "$$STATE_FILE" ]; then
-            previous_vpn_id=$$(tr -d '\r\n' < "$$STATE_FILE")
+            previous_vpn_generation=$$(tr -d '\r\n' < "$$STATE_FILE")
           fi
           if ! vpn_is_healthy; then
             rm -f "$$HEARTBEAT"
@@ -142,11 +142,11 @@ services:
             until vpn_is_healthy; do
               sleep 5
             done
-            current_vpn_id=$$(vpn_id)
+            current_vpn_generation=$$(vpn_generation)
           fi
-          if [ "$$current_vpn_id" != "$$previous_vpn_id" ]; then
+          if [ "$$current_vpn_generation" != "$$previous_vpn_generation" ]; then
             rm -f "$$HEARTBEAT"
-            if ! reconcile_dependents "$$current_vpn_id" "$$DEPENDENTS" "VPN container changed"; then
+            if ! reconcile_dependents "$$current_vpn_generation" "$$DEPENDENTS" "VPN container restarted or changed"; then
               log "Reconciliation failed; retrying in 15 seconds"
             else
               date +%s > "$$HEARTBEAT"
@@ -156,7 +156,7 @@ services:
             if [ "$$first_pass" != true ]; then
               log "Waiting 60 seconds for transient stack maintenance to finish:$$UNHEALTHY_NAMES"
               sleep 60
-              if ! vpn_is_healthy || [ "$$(vpn_id)" != "$$current_vpn_id" ]; then
+              if ! vpn_is_healthy || [ "$$(vpn_generation)" != "$$current_vpn_generation" ]; then
                 first_pass=false
                 continue
               fi
@@ -170,7 +170,7 @@ services:
             fi
             targets=$$UNHEALTHY_DEPENDENCIES
             names=$$UNHEALTHY_NAMES
-            if ! reconcile_dependents "$$current_vpn_id" "$$targets" "unhealthy stacks:$$names"; then
+            if ! reconcile_dependents "$$current_vpn_generation" "$$targets" "unhealthy stacks:$$names"; then
               log "Targeted reconciliation failed; retrying in 15 seconds"
             else
               date +%s > "$$HEARTBEAT"

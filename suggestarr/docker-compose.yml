@@ -7,6 +7,7 @@ services:
       - wud.watch=true
       - homepage.group=Acquisition
       - homepage.name=SuggestArr
+      - homepage.icon=https://suggestarr.bullman.net/img/logo.8e3a4916.png
       - homepage.href=https://suggestarr.bullman.net
       - homepage.description=Automated Media Recommendations
     volumes:

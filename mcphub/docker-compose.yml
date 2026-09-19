@@ -1,0 +1,31 @@
+services:
+  mcphub:
+    image: samanhappy/mcphub:latest
+    container_name: mcphub
+    restart: unless-stopped
+    init: true
+    labels:
+      - wud.watch=true
+      - homepage.group=Utilities
+      - homepage.name=MCPHub
+      - homepage.icon=docker.png
+      - homepage.href=https://mcphub.bullman.net
+      - homepage.description=MCP Server Management
+    volumes:
+      - /Volume1/public/docker-configs/mcphub/data:/app/data
+      # Preserve installed MCP server packages across container recreations.
+      - /Volume1/public/docker-configs/mcphub/npm-cache:/root/.npm
+      - /Volume1/public/docker-configs/mcphub/uv-cache:/root/.cache/uv
+    environment:
+      - TZ=America/Los_Angeles
+      - NODE_ENV=production
+      - ADMIN_PASSWORD=${MCPHUB_ADMIN_PASSWORD:?Set MCPHUB_ADMIN_PASSWORD in Portainer}
+      - JWT_SECRET=${MCPHUB_JWT_SECRET:?Set MCPHUB_JWT_SECRET in Portainer}
+    healthcheck:
+      test: curl --silent --fail http://localhost:3000/health
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - 13000:3000 # Web dashboard and MCP endpoint (/mcp)

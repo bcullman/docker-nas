@@ -1,0 +1,27 @@
+services:
+  playwright-headless:
+    image: mcr.microsoft.com/playwright/mcp:v0.0.82
+    container_name: playwright-headless
+    restart: unless-stopped
+    init: true
+    labels:
+      - wud.watch=true
+    environment:
+      - TZ=America/Los_Angeles
+    healthcheck:
+      test: ["CMD", "node", "-e", "const s=require('net').connect(8931,'127.0.0.1',()=>{s.end();process.exit(0)});s.setTimeout(5000,()=>process.exit(1));s.on('error',()=>process.exit(1));"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    # The official entrypoint supplies headless Chromium and --no-sandbox.
+    # No persistent logins, host mounts, or published browser-control ports.
+    command: ["--port", "8931", "--host", "0.0.0.0", "--allowed-hosts", "playwright-headless", "--isolated"]
+    shm_size: 1gb
+    networks:
+      - mcphub
+
+networks:
+  mcphub:
+    external: true
+    name: mcphub_default

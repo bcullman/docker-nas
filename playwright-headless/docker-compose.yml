@@ -16,7 +16,7 @@ services:
       start_period: 30s
     # The official entrypoint supplies headless Chromium and --no-sandbox.
     # No persistent logins, host mounts, or published browser-control ports.
-    command: ["--port", "8931", "--host", "0.0.0.0", "--allowed-hosts", "playwright-headless", "--isolated"]
+    command: ["--port", "8931", "--host", "0.0.0.0", "--allowed-hosts", "playwright-headless:8931", "--isolated"]
     shm_size: 1gb
     networks:
       - mcphub

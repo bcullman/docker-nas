@@ -20,3 +20,14 @@ The health check verifies the listener using Node, which is included in the imag
 Browser navigation must also be tested after deployment or image upgrades.
 
 Upstream: <https://github.com/microsoft/playwright-mcp>
+
+## Deployment verification
+
+Verified on 2026-09-20: Portainer Git stack `playwright-headless` (ID 68),
+5-minute Git polling, running and healthy container, no published ports or host
+mounts, and MCPHub discovery of 25 tools. `browser_navigate` returned the Example
+Domain page snapshot through MCPHub; `browser_close` released the test session.
+
+The allowed-host value must include the port: `playwright-headless:8931`.
+Using only the hostname caused an HTTP access rejection even though the listener
+health check passed. This check matches the request authority, not just the DNS name.

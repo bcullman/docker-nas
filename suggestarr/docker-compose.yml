@@ -7,7 +7,7 @@ services:
       - wud.watch=true
       - homepage.group=Acquisition
       - homepage.name=SuggestArr
-      - homepage.icon=mdi-movie-search
+      - homepage.icon=https://raw.githubusercontent.com/giuseppe99barchetta/SuggestArr/809353da4dc1ade2c5deeb421c2103f8ed2dbfa7/client/src/assets/logo.png
       - homepage.href=https://suggestarr.bullman.net
       - homepage.description=Automated Media Recommendations
     volumes:

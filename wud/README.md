@@ -30,5 +30,11 @@ Public URL: <https://wud.bullman.net>. LAN URL: <http://192.168.0.250:3001>.
 Cloudflare Access and WUD authentication are separate login layers. API clients,
 including dashboard widgets, also need WUD authentication under version 9.
 
+The Homepage widget uses a dedicated `Homepage widget` personal API token with
+only the `read` scope. Its value is stored in the WUD Portainer stack variable
+`WUD_HOMEPAGE_API_TOKEN` and interpolated into `homepage.widget.key`. Preserve that
+variable during redeployment. If revoked, create a replacement read token, update
+the stack variable, and redeploy WUD's Git stack to refresh the Docker label.
+
 References: [Authentication](https://getwud.app/docs/configuration/authentications/),
 [Storage](https://getwud.app/docs/configuration/storage/).

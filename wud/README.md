@@ -10,7 +10,9 @@ The database is persisted at `/Volume1/public/docker-configs/wud`, mounted at
 Changing the bootstrap variable should not be treated as a database password reset.
 
 The image is pinned to `9.1.0`. Review migration requirements before changing the
-version. The image includes a health check against `/health`.
+version. Compose probes `/health` directly with curl. The image's inherited
+shell probe emitted `sh: ==: unknown operand` while returning success, so the
+explicit check avoids incorrectly reporting a healthy container.
 
 ## Startup repair, 2026-09-27
 

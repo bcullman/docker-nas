@@ -13,6 +13,7 @@ services:
       - homepage.widget.type=whatsupdocker
       - homepage.widget.url=http://192.168.0.250:3001
       - homepage.widget.fields=["monitoring", "updates"]
+      - homepage.widget.key=${WUD_HOMEPAGE_API_TOKEN:?Set WUD_HOMEPAGE_API_TOKEN in Portainer}
     volumes:
       - /Volume1/public/docker-configs/wud:/store
       - /var/run/docker.sock:/var/run/docker.sock

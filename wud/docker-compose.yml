@@ -1,6 +1,6 @@
 services:
   whatsupdocker:
-    image: getwud/wud
+    image: getwud/wud:9.1.0
     container_name: wud
     restart: unless-stopped
     labels:
@@ -14,9 +14,12 @@ services:
       - homepage.widget.url=http://192.168.0.250:3001
       - homepage.widget.fields=["monitoring", "updates"]
     volumes:
+      - /Volume1/public/docker-configs/wud:/store
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - TZ=America/Los_Angeles
+      - WUD_AUTH_ADMIN_USER=admin
+      - WUD_AUTH_ADMIN_PASSWORD=${WUD_ADMIN_PASSWORD:?Set WUD_ADMIN_PASSWORD in Portainer}
       - WUD_WATCHER_LOCAL_CRON=0 0 19 * * *
       - WUD_WATCHER_LOCAL_WATCHBYDEFAULT=false
       - WUD_REGISTRY_HUB_PUBLIC_WATCHDIGEST=true

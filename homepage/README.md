@@ -14,18 +14,36 @@ The two manual tiles remain in the private mounted `services.yaml`:
 - Portainer: group `Server Management`, weight `10`.
 
 Keep the manual services file private because it contains widget credentials.
-`custom.css` is also deployed to the persistent config mount. It arranges the six
-sections as three independent desktop columns (1024px and wider):
+The layout uses Homepage's [native nested groups](https://gethomepage.dev/configs/settings/#nested-groups)
+with three parent groups whose headers are hidden:
 
-- Left: Watch, then Media Automation.
-- Middle: Media Library, then Smart Home.
-- Right: Network, then Server Management.
+- Left Column: Watch, then Media Automation.
+- Middle Column: Media Library, then Smart Home.
+- Right Column: Network, then Server Management.
 
-The `layout` order in `settings.yaml` is column-first. CSS column breaks before
-sections three and five keep each pair together without shared grid-row heights.
-Keep that order and the CSS breaks in sync if adding or rearranging sections.
-Smaller screens use a single column. `useEqualHeights: false` keeps tiles without
-widgets compact.
+The private `services.yaml` mirrors this hierarchy. Preserve the existing manual
+HDHomeRun and Portainer definitions under their nested groups. Empty lists let
+Docker discovery populate the other groups:
+
+```yaml
+- Left Column:
+    - Watch:
+        # Existing HDHomeRun entry goes here.
+    - Media Automation: []
+- Middle Column:
+    - Media Library: []
+    - Smart Home: []
+- Right Column:
+    - Network: []
+    - Server Management:
+        # Existing Portainer entry goes here.
+```
+
+Update both files together when changing the nesting. Docker labels continue to
+use the six visible section names. Homepage handles responsive sizing natively;
+`useEqualHeights: false` keeps tiles without widgets compact. No custom CSS or
+JavaScript is required. Keep the mounted `custom.css` empty to remove the previous
+layout override.
 
 | Group | Tile order |
 | --- | --- |

@@ -4,21 +4,30 @@ fullWidth: true
 useEqualHeights: false
 
 layout:
-  Watch:
-    icon: mdi-play-circle
+  Left Column:
+    header: false
     style: column
-  Media Automation:
-    icon: mdi-download
+    Watch:
+      icon: mdi-play-circle
+      style: column
+    Media Automation:
+      icon: mdi-download
+      style: column
+  Middle Column:
+    header: false
     style: column
-  Media Library:
-    icon: mdi-multimedia
+    Media Library:
+      icon: mdi-multimedia
+      style: column
+    Smart Home:
+      icon: mdi-home-automation
+      style: column
+  Right Column:
+    header: false
     style: column
-  Smart Home:
-    icon: mdi-home-automation
-    style: column
-  Network:
-    icon: mdi-network
-    style: column
-  Server Management:
-    icon: mdi-server
-    style: column
+    Network:
+      icon: mdi-network
+      style: column
+    Server Management:
+      icon: mdi-server
+      style: column

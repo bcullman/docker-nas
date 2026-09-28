@@ -34,6 +34,7 @@ services:
         DEPENDENTS="
         7:bittorrent
         10:prowlarr
+        69:flaresolverr
         9:sonarr
         11:radarr
         13:lidarr

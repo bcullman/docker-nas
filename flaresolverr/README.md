@@ -17,3 +17,12 @@ diagnostics. Do not add a Cloudflare Tunnel route to this unauthenticated API.
 The service is stateless; browser sessions and challenge cookies are temporary.
 The image includes its own init process and curl for the `/health` probe. Startup
 allows 60 seconds for the browser self-test.
+
+## Verified integration
+
+On 2026-09-27, Prowlarr's proxy test and the `1337x.to` indexer test passed.
+The enabled 1337x indexer and FlareSolverr proxy share the `flaresolverr` tag.
+A search for `Human Giant` returned results through Prowlarr, but none matched
+the TV series. The first challenge attempt timed out at 60 seconds; a subsequent
+attempt succeeded, so intermittent upstream challenge failures remain possible.
+The supported `1337x.st` alternate also returned a successfully solved challenge.

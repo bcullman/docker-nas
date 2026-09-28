@@ -14,9 +14,18 @@ The two manual tiles remain in the private mounted `services.yaml`:
 - Portainer: group `Server Management`, weight `10`.
 
 Keep the manual services file private because it contains widget credentials.
-Full-width row layouts keep each category together and avoid gaps beside long groups.
-`useEqualHeights: false` keeps tiles without widgets compact. Sections use two to four
-columns on desktop and collapse responsively on smaller screens.
+`custom.css` is also deployed to the persistent config mount. It arranges the six
+sections as three independent desktop columns (1024px and wider):
+
+- Left: Watch, then Media Automation.
+- Middle: Media Library, then Smart Home.
+- Right: Network, then Server Management.
+
+The `layout` order in `settings.yaml` is column-first. CSS column breaks before
+sections three and five keep each pair together without shared grid-row heights.
+Keep that order and the CSS breaks in sync if adding or rearranging sections.
+Smaller screens use a single column. `useEqualHeights: false` keeps tiles without
+widgets compact.
 
 | Group | Tile order |
 | --- | --- |

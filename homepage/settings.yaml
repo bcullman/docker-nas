@@ -6,25 +6,19 @@ useEqualHeights: false
 layout:
   Watch:
     icon: mdi-play-circle
-    style: row
-    columns: 3
-  Media Library:
-    icon: mdi-multimedia
-    style: row
-    columns: 4
+    style: column
   Media Automation:
     icon: mdi-download
-    style: row
-    columns: 4
+    style: column
+  Media Library:
+    icon: mdi-multimedia
+    style: column
   Smart Home:
     icon: mdi-home-automation
-    style: row
-    columns: 2
+    style: column
   Network:
     icon: mdi-network
-    style: row
-    columns: 3
+    style: column
   Server Management:
     icon: mdi-server
-    style: row
-    columns: 3
+    style: column

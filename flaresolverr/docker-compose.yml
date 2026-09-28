@@ -1,0 +1,25 @@
+services:
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: on-failure
+    labels:
+      - wud.watch=true
+      - homepage.group=Acquisition
+      - homepage.name=FlareSolverr
+      - homepage.icon=flaresolverr.png
+      - homepage.description=Cloudflare Challenge Helper for Prowlarr
+    network_mode: container:vpn
+    environment:
+      - TZ=America/Los_Angeles
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:8191/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    # Published by the VPN container; Prowlarr connects through localhost.
+    # ports:
+    #   - 8191:8191

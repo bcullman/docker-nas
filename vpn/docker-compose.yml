@@ -32,6 +32,7 @@ services:
       - 8787:8787               # readarr
       - 6767:6767               # bazarr
       - 11011:11011             # cleanuparr
+      - 192.168.0.250:8191:8191  # flaresolverr (LAN only)
     cap_add:
       - NET_ADMIN               # Required
       - NET_RAW                 # Required

@@ -1,23 +1,30 @@
 ---
 headerStyle: boxedWidgets
+fullWidth: true
 useEqualHeights: false
 
 layout:
   Watch:
     icon: mdi-play-circle
-    style: column
+    style: row
+    columns: 3
   Media Library:
     icon: mdi-multimedia
-    style: column
+    style: row
+    columns: 4
   Media Automation:
     icon: mdi-download
-    style: column
+    style: row
+    columns: 4
   Smart Home:
     icon: mdi-home-automation
-    style: column
+    style: row
+    columns: 2
   Network:
     icon: mdi-network
-    style: column
+    style: row
+    columns: 3
   Server Management:
     icon: mdi-server
-    style: column
+    style: row
+    columns: 3

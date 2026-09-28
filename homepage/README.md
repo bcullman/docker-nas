@@ -14,7 +14,9 @@ The two manual tiles remain in the private mounted `services.yaml`:
 - Portainer: group `Server Management`, weight `10`.
 
 Keep the manual services file private because it contains widget credentials.
-Column layouts and `useEqualHeights: false` let tiles without widgets stay compact.
+Full-width row layouts keep each category together and avoid gaps beside long groups.
+`useEqualHeights: false` keeps tiles without widgets compact. Sections use two to four
+columns on desktop and collapse responsively on smaller screens.
 
 | Group | Tile order |
 | --- | --- |

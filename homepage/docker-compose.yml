@@ -15,5 +15,7 @@ services:
       - PUID=0 # optional, your user id
       - PGID=0 # optional, your group id
       - HOMEPAGE_ALLOWED_HOSTS=homepage.bullman.net, 192.168.0.250:3333 # required, may need port. See gethomepage.dev/installation/#homepage_allowed_hosts
+      - HOMEPAGE_MCP_ENABLED=true
+      - HOMEPAGE_MCP_TOKEN=${HOMEPAGE_MCP_TOKEN:?Set HOMEPAGE_MCP_TOKEN in Portainer}
     ports:
       - 3333:3000

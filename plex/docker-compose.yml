@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Media
+      - homepage.group=Watch
       - homepage.name=Plex
+      - homepage.weight=10
       - homepage.icon=plex.png
       - homepage.href=https://plex.bullman.net
       - homepage.description=Plex Media Server

@@ -5,8 +5,9 @@ services:
     restart: on-failure
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Automation
       - homepage.name=BitTorrent
+      - homepage.weight=10
       - homepage.icon=qbittorrent.png
       - homepage.href=https://bittorrent.bullman.net
       - homepage.description=BitTorrent Client

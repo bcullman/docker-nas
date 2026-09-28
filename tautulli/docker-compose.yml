@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Media
+      - homepage.group=Watch
       - homepage.name=Tautulli
+      - homepage.weight=30
       - homepage.icon=tautulli.png
       - homepage.href=https://tautulli.bullman.net
       - homepage.description=Media Monitoring

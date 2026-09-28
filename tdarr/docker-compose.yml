@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Utilities
+      - homepage.group=Media Library
       - homepage.name=Tdarr
+      - homepage.weight=70
       - homepage.icon=tdarr.png
       - homepage.href=https://tdarr.bullman.net
       - homepage.description=Transcoding

@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Utilities
+      - homepage.group=Smart Home
       - homepage.name=Scrypted
+      - homepage.weight=20
       - homepage.icon=scrypted.png
       - homepage.href=https://scrypted.bullman.net
       - homepage.description=Camera and smart-home integration

@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Monitoring
+      - homepage.group=Network
       - homepage.name=My Speed
+      - homepage.weight=40
       - homepage.icon=myspeed.png
       - homepage.href=https://myspeed.bullman.net
       - homepage.description=Link Speed

@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Monitoring
+      - homepage.group=Server Management
       - homepage.name=Scrutiny
+      - homepage.weight=30
       - homepage.icon=scrutiny.png
       - homepage.href=https://scrutiny.bullman.net
       - homepage.description=Drive Health Monitoring

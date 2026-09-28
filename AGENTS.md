@@ -61,11 +61,16 @@ Services shown in Homepage keep their integration entirely in Compose labels. Or
 
 Use the established groups consistently:
 
-- `Acquisition`: download clients, indexers, request tools, and media acquisition managers
-- `Media`: media servers and media activity tools
-- `Monitoring`: system, storage, network-speed, UPS, and container monitoring
-- `Network`: DNS, tunnels, and VPN infrastructure
-- `Utilities`: general-purpose home and media utilities
+- `Watch`: Plex, live TV, and viewing activity
+- `Media Library`: requests, recommendations, library managers, subtitles, and transcoding
+- `Media Automation`: download clients, indexers, download cleanup, and indexer helpers
+- `Smart Home`: home automation and cameras
+- `Network`: DNS, tunnels, VPN infrastructure, and network-speed monitoring
+- `Server Management`: container administration, image updates, disk/UPS health, and MCPHub
+
+Use `homepage.weight` after `homepage.name` to preserve the tile order documented in
+`homepage/README.md`. Homepage layout settings are maintained in `homepage/settings.yaml`
+and applied to the persistent config mount separately from Compose deployments.
 
 Use the public `https://<name>.bullman.net` URL for `homepage.href`. Use the directly reachable LAN URL (`http://192.168.0.250:<port>`) for `homepage.widget.url`, not the public URL. A service without a useful page or supported widget may omit those labels.
 

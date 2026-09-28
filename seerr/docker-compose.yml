@@ -6,8 +6,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Library
       - homepage.name=Seerr
+      - homepage.weight=10
       - homepage.icon=seerr.png
       - homepage.href=https://seerr.bullman.net
       - homepage.description=Media Request Management

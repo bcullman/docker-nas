@@ -5,8 +5,9 @@ services:
     restart: on-failure
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Library
       - homepage.name=Lidarr
+      - homepage.weight=50
       - homepage.icon=lidarr.png
       - homepage.href=https://lidarr.bullman.net
       - homepage.description=Music Management

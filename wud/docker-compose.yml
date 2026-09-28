@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Monitoring
+      - homepage.group=Server Management
       - homepage.name=What's Up Docker
+      - homepage.weight=20
       - homepage.icon=whats-up-docker.png
       - homepage.href=https://wud.bullman.net
       - homepage.description=Docker Maintenance

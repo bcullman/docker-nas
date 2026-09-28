@@ -5,8 +5,9 @@ services:
     restart: on-failure
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Library
       - homepage.name=Radarr
+      - homepage.weight=30
       - homepage.icon=radarr.png
       - homepage.href=https://radarr.bullman.net
       - homepage.description=Movie Management

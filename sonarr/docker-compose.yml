@@ -5,8 +5,9 @@ services:
     restart: on-failure
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Library
       - homepage.name=Sonarr
+      - homepage.weight=40
       - homepage.icon=sonarr.png
       - homepage.href=https://sonarr.bullman.net
       - homepage.description=TV Series Management

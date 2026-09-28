@@ -5,8 +5,9 @@ services:
     restart: on-failure
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Automation
       - homepage.name=Cleanuparr
+      - homepage.weight=30
       - homepage.icon=cleanuparr.png
       - homepage.href=https://cleanuparr.bullman.net
       - homepage.description=Download Queue Cleanup

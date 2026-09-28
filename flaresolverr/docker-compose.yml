@@ -5,8 +5,9 @@ services:
     restart: on-failure
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Automation
       - homepage.name=FlareSolverr
+      - homepage.weight=40
       - homepage.icon=flaresolverr.png
       - homepage.description=Cloudflare Challenge Helper for Prowlarr
     network_mode: container:vpn

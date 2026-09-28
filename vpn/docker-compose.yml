@@ -7,6 +7,7 @@ services:
       - wud.watch=true
       - homepage.group=Network
       - homepage.name=NordVPN
+      - homepage.weight=30
       - homepage.icon=nordvpn.png
       - homepage.description=VPN Connection
     environment:                # Review https://github.com/bubuntux/nordvpn#environment-variables

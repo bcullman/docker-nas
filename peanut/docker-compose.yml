@@ -12,8 +12,9 @@ services:
     # Note: PUID/PGID environment variables are not supported.
     labels:
       - wud.watch=true
-      - homepage.group=Monitoring
+      - homepage.group=Server Management
       - homepage.name=PeaNUT
+      - homepage.weight=40
       - homepage.icon=peanut.png
       - homepage.href=https://nut.bullman.net
       - homepage.description=UPS Monitoring

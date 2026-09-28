@@ -6,8 +6,9 @@ services:
     init: true
     labels:
       - wud.watch=true
-      - homepage.group=Utilities
+      - homepage.group=Server Management
       - homepage.name=MCPHub
+      - homepage.weight=50
       - homepage.icon=docker.png
       - homepage.href=https://mcphub.bullman.net
       - homepage.description=MCP Server Management

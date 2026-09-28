@@ -5,8 +5,9 @@ services:
     restart: on-failure
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Library
       - homepage.name=Bazarr
+      - homepage.weight=60
       - homepage.icon=bazarr.png
       - homepage.href=https://bazarr.bullman.net
       - homepage.description=Subtitle Management

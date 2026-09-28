@@ -5,8 +5,9 @@ services:
     restart: on-failure
     labels:
       - wud.watch=true
-      - homepage.group=Acquisition
+      - homepage.group=Media Automation
       - homepage.name=Prowlarr
+      - homepage.weight=20
       - homepage.icon=prowlarr.png
       - homepage.href=https://prowlarr.bullman.net
       - homepage.description=Indexer Management

@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Monitoring
+      - homepage.group=Network
       - homepage.name=VPN Orchestrator
+      - homepage.weight=50
       - homepage.icon=sh-docker.png
       - homepage.description=VPN Dependency Management
     volumes:

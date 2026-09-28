@@ -5,8 +5,9 @@ services:
     restart: unless-stopped
     labels:
       - wud.watch=true
-      - homepage.group=Utilities
+      - homepage.group=Smart Home
       - homepage.name=Homebridge
+      - homepage.weight=10
       - homepage.icon=homebridge.png
       - homepage.href=https://Homebridge.bullman.net
       - homepage.description=Homebridge

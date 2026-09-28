@@ -1,0 +1,23 @@
+---
+headerStyle: boxedWidgets
+useEqualHeights: false
+
+layout:
+  Watch:
+    icon: mdi-play-circle
+    style: column
+  Media Library:
+    icon: mdi-multimedia
+    style: column
+  Media Automation:
+    icon: mdi-download
+    style: column
+  Smart Home:
+    icon: mdi-home-automation
+    style: column
+  Network:
+    icon: mdi-network
+    style: column
+  Server Management:
+    icon: mdi-server
+    style: column

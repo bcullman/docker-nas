@@ -90,37 +90,62 @@ services:
           log "Timed out waiting for:$$UNHEALTHY_NAMES"
           return 1
         }
+        reconcile_dependency() {
+          generation=$$1
+          dependency=$$2
+          stack_id=$${dependency%%:*}
+          container=$${dependency#*:}
+          progress_file=/state/reconciled-$$stack_id
+          if [ -f "$$progress_file" ] && \
+            [ "$$(cat "$$progress_file")" = "$$generation" ] && \
+            container_is_healthy "$$container"; then
+            log "Keeping healthy $$container; already reconciled for this VPN generation"
+            return 0
+          fi
+          rm -f "$$progress_file"
+          status=$$(docker inspect --format='{{.State.Status}}' "$$container" 2>/dev/null || true)
+          case "$$status" in
+            ""|exited|created|dead)
+              log "$$container is already stopped or missing; starting its stack"
+              ;;
+            *)
+              log "Stopping $$container stack (ID: $$stack_id)"
+              if ! post "/api/stacks/$$stack_id/stop?endpointId=$$PORTAINER_ENDPOINT_ID"; then
+                log "Failed to stop $$container stack; leaving it pending"
+                return 1
+              fi
+              ;;
+          esac
+          # Do not start against a VPN that changed while the stack was stopping.
+          if [ "$$(vpn_generation)" != "$$generation" ] || ! vpn_is_healthy; then
+            log "VPN changed or became unhealthy before starting $$container"
+            return 1
+          fi
+          log "Starting $$container stack (ID: $$stack_id)"
+          if ! post "/api/stacks/$$stack_id/start?endpointId=$$PORTAINER_ENDPOINT_ID"; then
+            log "Failed to start $$container stack; leaving it pending"
+            return 1
+          fi
+          printf '%s\n' "$$generation" > "$$progress_file.tmp"
+          mv "$$progress_file.tmp" "$$progress_file"
+        }
         reconcile_dependents() {
           current_vpn_generation=$$1
           targets=$$2
           reason=$$3
           log "Reconciling VPN-dependent Portainer stacks ($$reason)"
-          for action in stop start; do
-            if [ "$$action" = stop ]; then
-              action_label=Stopping
-            else
-              action_label=Starting
-            fi
-            failed=0
-            pids=""
-            for dependency in $$targets; do
-              stack_id=$${dependency%%:*}
-              container=$${dependency#*:}
-              log "$$action_label $$container stack (ID: $$stack_id)"
-              (post "/api/stacks/$$stack_id/$$action?endpointId=$$PORTAINER_ENDPOINT_ID" || {
-                log "Failed to $$action $$container stack"
-                exit 1
-              }) &
-              pids="$$pids $$!"
-            done
-            for pid in $$pids; do
-              wait "$$pid" || failed=1
-            done
-            if [ "$$action" = start ] && [ "$$failed" -ne 0 ]; then
-              return 1
-            fi
+          failed=0
+          pids=""
+          for dependency in $$targets; do
+            (reconcile_dependency "$$current_vpn_generation" "$$dependency") &
+            pids="$$pids $$!"
           done
+          for pid in $$pids; do
+            wait "$$pid" || failed=1
+          done
+          # Let successful starts finish health checks even when another API call failed.
           wait_for_dependents "$$current_vpn_generation" || return 1
+          [ "$$failed" -eq 0 ] || return 1
           printf '%s\n' "$$current_vpn_generation" > "$$STATE_FILE.tmp"
           mv "$$STATE_FILE.tmp" "$$STATE_FILE"
           log "Reconciliation completed for VPN generation $$current_vpn_generation"

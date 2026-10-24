@@ -40,3 +40,33 @@ Test NAS startup:
 The orchestrator polls the VPN container rather than relying on transient Docker events. A changed VPN container ID or start timestamp causes all dependent stacks to be stopped and started in parallel through Portainer. This covers both container replacement and an in-place restart. On orchestrator startup, only missing or unhealthy dependents are reconciled when the recorded VPN generation is unchanged. During steady state, an unhealthy dependent receives a 60-second grace period for intentional maintenance and is reconciled by itself only if it remains unhealthy. Every reconciliation waits for the VPN and the complete dependent group to be healthy before recording success.
 
 The VPN container generation (container ID plus start timestamp) and heartbeat state live under `/Volume1/public/docker-configs/vpn-orchestrator`. The Portainer token is supplied through the stack's `PORTAINER_API_KEY` variable. The orchestration script is inline in `docker-compose.yml` because Portainer GitOps deploys the selected Compose file without making adjacent repository files available to runtime bind mounts or file-backed configs.
+
+## Partial failures and retries
+
+A changed VPN container ID or start timestamp requires reconciliation of all
+VPN-dependent stacks. Each stack is stopped and started through Portainer;
+independent stacks reconcile in parallel.
+
+Successful stop/start sequences record the VPN generation in
+`/state/reconciled-<stack-id>`. Retries skip a completed stack while its container
+is healthy. These markers survive orchestrator restarts. A new VPN generation
+invalidates the markers, and an unhealthy container is always eligible for repair.
+Already-stopped or missing containers proceed directly to the start request.
+A failed stop prevents a start request for that stack.
+
+The group generation is committed only after all API operations succeed and all
+containers become healthy. The existing 60-second maintenance grace period still
+applies to health failures when the group generation is unchanged.
+
+This addresses the 2026-10-24 incident: Bazarr stop/start errors caused three full
+group cycles. Per-stack progress prevents successful healthy peers from being
+cycled again while a failed stack is retried. Persistent Portainer errors can
+still leave the affected stack pending and require investigation.
+
+Run the shell behavior tests with:
+
+```sh
+python3 -m unittest discover -s vpn-orchestrator/tests -v
+```
+
+Tests use fake Docker and Portainer calls; they do not restart NAS containers.

@@ -48,7 +48,7 @@ layout override.
 | Group | Tile order |
 | --- | --- |
 | Watch | Plex, HDHomeRun, Tautulli |
-| Media Library | Seerr, SuggestArr, Radarr, Sonarr, Lidarr, Bazarr, Tdarr |
+| Media Library | Seerr, Radarr, Sonarr, Lidarr, Bazarr, Tdarr |
 | Media Automation | BitTorrent, Prowlarr, Cleanuparr, FlareSolverr |
 | Smart Home | Homebridge, Scrypted |
 | Network | AdGuard, Cloudflare Tunnel, NordVPN, My Speed, VPN Orchestrator |

@@ -107,7 +107,7 @@ and only that service's credentials. CleanUpArr additionally sets `CLEANUPARR_PO
 | Homepage | [Native MCP endpoint](https://gethomepage.dev/configs/mcp/) requires enabling it and a private `HOMEPAGE_MCP_TOKEN`. Compose change is prepared and validated; deployment approval is pending. Default endpoint access remains read-only. |
 | WUD | No suitable standalone connector found; Homarr integration would require an additional application. Container was restarting during inventory. |
 | Scrutiny | Found a generic reachability check, but no suitable connector for this deployment's disk/SMART data. |
-| PeaNUT, MySpeed, SuggestArr | No suitable published application connector found. |
+| PeaNUT, MySpeed | No suitable published application connector found. |
 | NordVPN container | Available VPN MCP projects target a local CLI or Gluetun, not this deployed container's remote API. |
 | VPN orchestrator | Repository-specific service without an application MCP connector. |
 | MCPHub | Provides the aggregate endpoint itself. |
